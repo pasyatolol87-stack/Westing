@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Network - Dashboard</title>
+    <style>
+        /* === RESET & VARIABEL === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Warna Utama - Ganti sesuai kebutuhan */
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --accent-color: #ec4899;
+            
+            /* Warna Background */
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-hover: #1f2937;
+            
+            /* Warna Text */
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --text-accent: #60a5fa;
+            
+            /* Border & Shadow */
+            --border-color: #374151;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* === BODY & LAYOUT UTAMA === */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* === HEADER / NAVBAR === */
+        .header {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Logo & Nama Website */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .site-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Tombol Connect Wallet */
+        .connect-wallet-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .connect-wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        .wallet-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Status Connected */
+        .wallet-connected {
+            background: var(--bg-card);
+            border: 1px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .wallet-address {
+            font-family: monospace;
+            color: var(--text-accent);
+        }
+
+        .disconnect-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        /* === CONTAINER UTAMA === */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* === SECTION HERO / WELCOME === */
+        .hero-section {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* === STATS CARDS === */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            color: #10b981;
+            margin-top: 0.5rem;
+        }
+
+        /* === MENU NAVIGATION === */
+        .menu-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .menu-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .menu-btn:hover, .menu-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* === CONTENT SECTIONS === */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === DASHBOARD CONTENT === */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            border-color: var(--primary-color);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* === TABLE STYLING === */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-secondary);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+
+        tr:hover {
+            background: var(--bg-hover);
+        }
+
+        /* === FORM STYLING === */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        /* === MODAL / POPUP === */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* === LOADING SPINNER === */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* === RESPONSIVE DESIGN === */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-nav {
+                flex-wrap: nowrap;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* === ALERT / NOTIFICATION === */
+        .alert {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            min-width: 300px;
+            z-index: 3000;
+            display: none;
+            box-shadow: var(--shadow);
+        }
+
+        .alert.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); }
+            to { transform: translateX(0); }
+        }
+
+        .alert.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .alert.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert.info {
+            border-left: 4px solid var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- === ALERT NOTIFICATION === -->
+    <div id="alert" class="alert">
+        <p id="alertMessage"></p>
+    </div>
+
+    <!-- === HEADER / NAVBAR === -->
+    <header class="header">
+        <div class="logo-container">
+            <!-- Logo Website - Ganti sesuai kebutuhan -->
+            <div class="logo">Y</div>
+            <!-- Nama Website - Ganti di sini -->
+            <h1 class="site-name">Your Network</h1>
+        </div>
+
+        <!-- Tombol Connect Wallet -->
+        <div id="walletSection">
+            <button id="connectWalletBtn" class="connect-wallet-btn">
+                <svg class="wallet-icon" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
+                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
+                </svg>
+                Connect Phantom Wallet
+            </button>
+        </div>
+    </header>
+
+    <!-- === MAIN CONTAINER === -->
+    <div class="container">
+        <!-- === HERO SECTION === -->
+        <section class="hero-section">
+            <h2 class="hero-title">Welcome to Your Network</h2>
+            <p class="hero-subtitle">Kelola aset digital Anda dengan mudah dan aman</p>
+        </section>
+
+        <!-- === LOADING SPINNER === -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 1rem; color: var(--text-secondary);">Connecting to wallet...</p>
+        </div>
+
+        <!-- === CONTENT AREA (Setelah Connect Wallet) === -->
+        <div id="mainContent" style="display: none;">
+            <!-- === STATISTICS CARDS === -->
+            <div class="stats-grid">
+                <!-- Card 1: Total Balance -->
+                <div class="stat-card">
+                    <div class="stat-label">Total Balance</div>
+                    <div class="stat-value" id="totalBalance">0 SOL</div>
+                    <div class="stat-change">+12.5% this month</div>
+                </div>
+
+                <!-- Card 2: Total Transactions -->
+                <div class="stat-card">
+                    <div class="stat-label">Total Transactions</div>
+                    <div class="stat-value" id="totalTx">0</div>
+                    <div class="stat-change">+8 this week</div>
+                </div>
+
+                <!-- Card 3: NFTs Owned -->
+                <div class="stat-card">
+                    <div class="stat-label">NFTs Owned</div>
+                    <div class="stat-value" id="totalNFTs">0</div>
+                    <div class="stat-change">+2 new items</div>
+                </div>
+
+                <!-- Card 4: Active Stakes -->
+                <div class="stat-card">
+                    <div class="stat-label">Active Stakes</div>
+                    <div class="stat-value" id="activeStakes">0</div>
+                    <div class="stat-change">5.2% APY</div>
+                </div>
+            </div>
+
+            <!-- === MENU NAVIGATION === -->
+            <nav class="menu-nav">
+                <button class="menu-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+                <button class="menu-btn" onclick="switchTab('transactions')">Transactions</button>
+                <button class="menu-btn" onclick="switchTab('staking')">Staking</button>
+                <button class="menu-btn" onclick="switchTab('nft')">NFT Gallery</button>
+                <button class="menu-btn" onclick="switchTab('settings')">Settings</button>
+            </nav>
+
+            <!-- === DASHBOARD TAB === -->
+            <div id="dashboard" class="content-section active">
+                <div class="dashboard-grid">
+                    <!-- Feature 1: Send Tokens -->
+                    <div class="feature-card">
+                        <div class="feature-icon">💸</div>
+                        <h3 class="feature-title">Send Tokens</h3>
+                        <p class="feature-description">Transfer SOL dan token lainnya ke alamat wallet mana pun dengan cepat dan aman.</p>
+                    </div>
+
+                    <!-- Feature 2: Swap Tokens -->
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h3 class="feature-title">Swap Tokens</h3>
+                        <p class="feature-description">Tukar token Anda dengan harga terbaik di pasar menggunakan agregator DEX.</p>
+                    </div>
+
+                    <!-- Feature 3: Earn Rewards -->
+                    <div class="feature-card">
+                        <div class="feature-icon">🎁</div>
+                        <h3 class="feature-title">Earn Rewards</h3>
+                        <p class="feature-description">Stake token Anda dan dapatkan passive income dengan APY kompetitif.</p>
+                    </div>
+
+                    <!-- Feature 4: NFT Marketplace -->
+                    <div class="feature-card">
+                        <div class="feature-icon">🖼️</div>
+                        <h3 class="feature-title">NFT Marketplace</h3>
+                        <p class="feature-description">Jual beli dan koleksi NFT eksklusif dari berbagai creator terbaik.</p>
+                    </div>
+
+                    <!-- Feature 5: Analytics -->
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3 class="feature-title">Portfolio Analytics</h3>
+                        <p class="feature-description">Lacak performa portfolio Anda dengan grafik dan statistik real-time.</p>
+                    </div>
+
+                    <!-- Feature 6: Security -->
+                    <div class="feature-card">
+                        <div class="feature-icon">🔐</div>
+                        <h3 class="feature-title">Enhanced Security</h3>
+                        <p class="feature-description">Keamanan tingkat enterprise dengan enkripsi end-to-end dan 2FA.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === TRANSACTIONS TAB === -->
+            <div id="transactions" class="content-section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Hash</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionList">
+                            <tr>
+                                <td>2025-10-04</td>
+                                <td>Send</td>
+                                <td style="color: #ef4444;">-1.5 SOL</td>
+                                <td style="color: #10b981;">Success</td>
+                                <td style="font-family: monospace; color: var(--text-accent);">5kE7x...</td>
+                            </tr>
+                            <tr>
+                                <td>2025-10-03</td>
+                                <td>Receive</td>
+                                <td style="color: #10b981;">+3.2 SOL</td>
+                                <td style="color: #10b981;">Success</td>
+                                <td style="font-family: monospace; color: var(--text-accent);">8mP2y...</td>
+                            </tr>
+                            <tr>
+                                <td>2025-10-02</td>
+                                <td>Stake</td>
+                                <td style="color: #6366f1;">10.0 SOL</td>
+                                <td style="color: #10b981;">Success</td>
+                                <td style="font-family: monospace; color: var(--text-accent);">2nQ9z...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- === STAKING TAB === -->
+            <div id="staking" class="content-section">
+                <div class="feature-card" style="max-width: 600px; margin: 0 auto;">
+                    <h3 class="feature-title">Stake Your Tokens</h3>
+                    <p class="feature-description" style="margin-bottom: 2rem;">Dapatkan passive income dengan staking SOL Anda</p>
+                    
+                    <form id="stakingForm">
+                        <div class="form-group">
+                            <label class="form-label">Amount to Stake (SOL)</label>
+                            <input type="number" class="form-input" placeholder="0.00" min="0" step="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Staking Period</label>
+                            <select class="form-input" required>
+                                <option value="">Select period</option>
+                                <option value="30">30 Days - 3% APY</option>
+                                <option value="90">90 Days - 5% APY</option>
+                                <option value="180">180 Days - 8% APY</option>
+                                <option value="365">365 Days - 12% APY</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Stake Now</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- === NFT GALLERY TAB === -->
+            <div id="nft" class="content-section">
+                <div class="dashboard-grid">
+                    <!-- NFT Item 1 -->
+                    <div class="feature-card">
+                        <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; margin-bottom: 1rem;"></div>
+                        <h3 class="feature-title">Cool NFT #1234</h3>
+                        <p class="feature-description">Floor Price: 2.5 SOL</p>
+                    </div>
+
+                    <!-- NFT Item 2 -->
+                    <div class="feature-card">
+                        <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 8px; margin-bottom: 1rem;"></div>
+                        <h3 class="feature-title">Awesome Art #5678</h3>
+                        <p class="feature-description">Floor Price: 1.8 SOL</p>
+                    </div>
+
+                    <!-- NFT Item 3 -->
+                    <div class="feature-card">
+                        <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 8px; margin-bottom: 1rem;"></div>
+                        <h3 class="feature-title">Digital Gem #9012</h3>
+                        <p class="feature-description">Floor Price: 3.2 SOL</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- === SETTINGS TAB === -->
+            <div id="settings" class="content-section">
+                <div class="feature-card" style="max-width: 600px; margin: 0 auto;">
+                    <h3 class="feature-title">Account Settings</h3>
+                    
+                    <form id="settingsForm">
+                        <div class="form-group">
+                            <label class="form-label">Display Name</label>
+                            <input type="text" class="form-input" placeholder="Enter your name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email Notifications</label>
+                            <select class="form-input" required>
+                                <option value="all">All Notifications</option>
+                                <option value="important">Important Only</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Default Currency</label>
+                            <select class="form-input" required>
+                                <option value="SOL">SOL</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Save Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- === JAVASCRIPT === -->
+    <script>
+        // === VARIABEL GLOBAL ===
+        let walletConnected = false;
+        let walletAddress = null;
+
+        // === FUNGSI: Connect Phantom Wallet ===
+        async function connectPhantomWallet() {
+            const loading = document.getElementById('loading');
+            const connectBtn = document.getElementById('connectWalletBtn');
+            
+            try {
+                // Tampilkan loading
+                loading.classList.add('active');
+                
+                // Cek apakah Phantom terinstall
+                const isPhantomInstalled = window.solana && window.solana.isPhantom;
+                
+                if (!isPhantomInstalled) {
+                    showAlert('Phantom Wallet tidak terinstall! Silakan install dari phantom.app', 'error');
+                    loading.classList.remove('active');
+                    return;
+                }
+
+                // Connect ke Phantom
+                const response = await window.solana.connect();
+                walletAddress = response.publicKey.toString();
+                walletConnected = true;
+
+                // Update UI setelah connected
+                setTimeout(() => {
+                    loading.classList.remove('active');
+                    updateWalletUI();
+                    showMainContent();
+                    showAlert('Wallet berhasil terhubung!', 'success');
+                }, 1000);
+
+            } catch (err) {
+                console.error('Error connecting wallet:', err);
+                loading.classList.remove('active');
+                showAlert('Gagal menghubungkan wallet. Silakan coba lagi.', 'error');
+            }
+        }
+
+        // === FUNGSI: Update UI Wallet ===
+        function updateWalletUI() {
+            const walletSection = document.getElementById('walletSection');
+            const shortAddress = walletAddress.substring(0, 4) + '...' + walletAddress.substring(walletAddress.length - 4);
+            
+            walletSection.innerHTML = `
+                <div class="wallet-connected">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Connected</div>
+                        <div class="wallet-address">${shortAddress}</div>
+                    </div>
+                    <button onclick="disconnectWallet()" class="disconnect-btn">Disconnect</button>
+                </div>
+            `;
+        }
+
+        // === FUNGSI: Disconnect Wallet ===
+        async function disconnectWallet() {
+            try {
+                await window.solana.disconnect();
+                walletConnected = false;
+                walletAddress = null;
+                
+                // Reset UI
+                location.reload();
+            } catch (err) {
+                console.error('Error disconnecting wallet:', err);
+                showAlert('Gagal disconnect wallet', 'error');
+            }
+        }
+
+        // === FUNGSI: Tampilkan Main Content ===
+        function showMainContent() {
+            document.getElementById('mainContent').style.display = 'block';
+            
+            // Simulasi data (ganti dengan data real dari blockchain)
+            document.getElementById('totalBalance').textContent = '12.5 SOL';
+            document.getElementById('totalTx').textContent = '247';
+            document.getElementById('totalNFTs').textContent = '15';
+            document.getElementById('activeStakes').textContent = '3';
+        }
+
+        // === FUNGSI: Switch Tab/Menu ===
+        function switchTab(tabName) {
+            // Sembunyikan semua section
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Tampilkan section yang dipilih
+            document.getElementById(tabName).classList.add('active');
+            
+            // Update active button
+            const buttons = document.querySelectorAll('.menu-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // === FUNGSI: Show Alert/Notification ===
+        function showAlert(message, type = 'info') {
+            const alert = document.getElementById('alert');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            alertMessage.textContent = message;
+            alert.className = `alert ${type} active`;
+            
+            setTimeout(() => {
+                alert.classList.remove('active');
+            }, 3000);
+        }
+
+        // === EVENT LISTENERS ===
+        document.getElementById('connectWalletBtn').addEventListener('click', connectPhantomWallet);
+
+        // Form Staking
+        document.getElementById('stakingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showAlert('Staking berhasil! Token Anda akan mulai menghasilkan reward.', 'success');
+            e.target.reset();
+        });
+
+        // Form Settings
+        document.getElementById('settingsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showAlert('Settings berhasil disimpan!', 'success');
+        });
+
+        // Auto-connect jika sebelumnya sudah connected
+        window.addEventListener('load', async () => {
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    const response = await window.solana.connect({ onlyIfTrusted: true });
+                    walletAddress = response.publicKey.toString();
+                    walletConnected = true;
+                    updateWalletUI();
+                    showMainContent();
+                } catch (err) {
+                    // User belum pernah connect sebelumnya
+                    console.log('Not previously connected');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
